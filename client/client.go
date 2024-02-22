@@ -6,8 +6,23 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/alijabbar034/go-microservice/proto"
 	"github.com/alijabbar034/go-microservice/types"
+	"google.golang.org/grpc"
 )
+
+type Cient interface {
+	FetchPrice(ctx context.Context, ticker string) (float32, error)
+}
+
+func NewGrpcClient(remote string) (proto.PriceFetcherClient, error) {
+	conn, err := grpc.Dial(remote, grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	client := proto.NewPriceFetcherClient(conn)
+	return client, nil
+}
 
 type client struct {
 	endpoint string
